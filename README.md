@@ -30,13 +30,11 @@ The system implements a **Request-Response Handshake**:
 - Validation of a single Router instance.
 - Verified arbitration logic and port-to-port packet forwarding.
 
-Here is an example of how a router look's like:
-
+Here is an example of how a router look's like: 
 ![Router](image.png)
 
 ### Visual Representation
 The diagram below illustrates a specific test case executed during simulation. It depicts a "stress scenario" where multiple ports inject packets simultaneously, triggering the arbiter's conflict resolution logic.
-
 ![L0_scenario](image-2.png)
 
 #### Explanation of the Diagram Events:
