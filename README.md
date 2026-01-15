@@ -1,6 +1,4 @@
-![WhatsApp Image 2026-01-15 at 19 53 54](https://github.com/user-attachments/assets/8811fffa-4998-4292-a8b4-761a64a87d8e)# Network-on-Chip (NoC) Simulation Environment
-
-A high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
+tA high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
 
 ## 🏗️ System Architecture
 
