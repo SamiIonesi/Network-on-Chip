@@ -1,0 +1,13 @@
+# Ignoră executabilele
+l1_sim
+*.out
+*.exe
+
+# Ignoră fișierele obiect (temporare la compilare)
+*.o
+
+# Ignoră setările locale VS Code (nu e bine să le dai altora)
+.vscode/
+
+# Ignoră fișiere de sistem
+.DS_Store
