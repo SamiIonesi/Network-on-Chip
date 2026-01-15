@@ -30,6 +30,45 @@ The system implements a **Request-Response Handshake**:
 - Validation of a single Router instance.
 - Verified arbitration logic and port-to-port packet forwarding.
 
+Here is an example of how a router look's like: 
+![Router](image.png)
+
+### Visual Representation
+The diagram below illustrates a specific test case executed during simulation. It depicts a "stress scenario" where multiple ports inject packets simultaneously, triggering the arbiter's conflict resolution logic.
+![L0_scenario](image-2.png)
+
+#### Explanation of the Diagram Events:
+* **Active Routing (North):** A packet with `Dst: 20` has successfully won arbitration and is being forwarded to Port 0 (North).
+* **Packet Drop (East):** A packet with `Dst: 34` arrives on Port 2 (East). Since `34` is not defined in the Routing Table (CFG), the router performs a **DROP** operation to prevent deadlock.
+* **Arbitration Conflict (Center):** A packet with `Dst: 10` (from West) and `Dst: 35` (from South) both request the same resource or encounter a busy port. The Arbiter grants access to one, while the other enters a **BLOCKED** state.
+* **Head-of-Line (HoL) Blocking (South):** Notice the packet `Dst: 120` on Port 1 (South). It is stuck in the FIFO queue because the packet in front of it (`Dst: 35`) is currently blocked. This validates the FIFO behavior of the input buffers.
+
+#### Simulation Output Log
+The console output confirms the cycle-accurate behavior of these events.
+
+```bash
+--- START L0  ---
+@10 ns [CFG] Route: Dst 10->Port NORD
+@10 ns [CFG] Route: Dst 20->Port EST
+@10 ns [CFG] Route: Dst 35->Port NORD
+@10 ns [CFG] Route: Dst 120->Port VEST
+@10 ns [CFG] Port 3 OFF
+Injecting packet 1 (on Port 3)...
+Injecting packet 2 (on Port 2)...
+Injecting packet 3 (on Port 0 - HIGH PRIORITY)...
+Injecting packet 4 (on Port 1)...
+Injecting packet 5 (on Port 1)...
+@30 ns [ROUTER] Pkt in port NORD: [WRITE Src:88 -> Dst:20 Addr:5 Data:500] -> Fwd to Port EST
+@40 ns [ROUTER] Pkt in port SUD: [WRITE Src:120 -> Dst:35 Addr:8 Data:40] -> Fwd to Port NORD
+@50 ns [ROUTER] Pkt in port SUD: [WRITE Src:1 -> Dst:120 Addr:12 Data:43] -> DROP: Port VEST disabled
+@60 ns [ROUTER] Pkt in port EST: [WRITE Src:20 -> Dst:34 Addr:0 Data:100] -> DROP: No route for Destination 34
+Received on NORTH (Port 0): [WRITE Src:120 -> Dst:35 Addr:8 Data:40]
+SOUTH (Port 1) is empty.
+Received on EAST (Port 2): [WRITE Src:88 -> Dst:20 Addr:5 Data:500]
+WEST (Port 3) is empty.
+--- END ---
+```
+
 ### Level 1: Static Topology (Current)
 - **Scale:** 8-Router linear backbone.
 - **Complexity:** Complex topology with multiple peripheral devices (CPUs/MEMs).
@@ -40,6 +79,8 @@ The system implements a **Request-Response Handshake**:
 - **Configuration:** Introduction of a **System Configurator** module.
 - **Parsing:** Automatic network assembly by reading an external configuration file (Topology & Traffic).
 - **Scalability:** Support for 16+ routers and configurable FIFO queue depths.
+
+### Level 3: TO DO: a new future
 
 ---
 
