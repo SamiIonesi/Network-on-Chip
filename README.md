@@ -1,4 +1,4 @@
-tA high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
+A high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
 
 ## 🏗️ System Architecture
 
