@@ -31,11 +31,13 @@ The system implements a **Request-Response Handshake**:
 - Verified arbitration logic and port-to-port packet forwarding.
 
 Here is an example of how a router look's like: 
-![Router](image.png)
+
+<img width="687" height="614" alt="image" src="https://github.com/user-attachments/assets/da3abb51-1d9a-4781-acf4-2791acf863d6" />
 
 ### Visual Representation
 The diagram below illustrates a specific test case executed during simulation. It depicts a "stress scenario" where multiple ports inject packets simultaneously, triggering the arbiter's conflict resolution logic.
-![L0_scenario](image-2.png)
+
+<img width="745" height="644" alt="image" src="https://github.com/user-attachments/assets/2631123e-25ab-4a00-a25f-d7e1f39a45f2" />
 
 #### Explanation of the Diagram Events:
 * **Active Routing (North):** A packet with `Dst: 20` has successfully won arbitration and is being forwarded to Port 0 (North).
