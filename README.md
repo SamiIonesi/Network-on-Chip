@@ -1,4 +1,4 @@
-# Network-on-Chip (NoC) Simulation Environment
+![WhatsApp Image 2026-01-15 at 19 53 54](https://github.com/user-attachments/assets/8811fffa-4998-4292-a8b4-761a64a87d8e)# Network-on-Chip (NoC) Simulation Environment
 
 A high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
 
@@ -71,11 +71,72 @@ WEST (Port 3) is empty.
 --- END ---
 ```
 
-### Level 1: Static Topology (Current)
+### Level 1: Static Topology
 - **Scale:** 8-Router linear backbone.
 - **Complexity:** Complex topology with multiple peripheral devices (CPUs/MEMs).
 - **Routing:** Manual configuration of routing tables via a dedicated `cfg_port`.
 - **Validation:** Successful end-to-end communication from Router 0 (West) to Router 7 (East) with a 10ns simulated memory access latency.
+
+#### Visual Representation
+The diagram below shows the end-to-end path of a packet traveling from the first router to the last router in the chain.
+
+<img width="620" height="162" alt="image" src="https://github.com/user-attachments/assets/5aef6e19-b382-486a-b0a8-29c5c4849caf" />
+
+#### Simulation Output Log Example
+```bash
+--- START L1 SIMULATION ---
+@10 ns [CFG] Route: Dst 200->Port EST
+@10 ns [CFG] Route: Dst 20->Port VEST
+@10 ns [CFG] Route: Dst 83->Port SUD
+...
+@10 ns [CFG] Route: Dst 8->Port EST
+@10 ns [CFG] Route: Dst 100->Port EST
+
+@20 ns [CPU 20] INIT WRITE -> MEM 200 | Adr:10 Val:83
+@30 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@40 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@50 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@60 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@70 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@80 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@90 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@100 ns [ROUTER] Pkt in port VEST: [WRITE Src:20 -> Dst:200 Addr:10 Data:83] -> Fwd to Port EST
+@100 ns [MEM 200] RECV: [WRITE Src:20 -> Dst:200 Addr:10 Data:83]
+      ---> [WRITE OP] Written value 83 at address 10
+      ---> [REPLY] Sending response to CPU 20
+@120 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@130 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@140 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@150 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@160 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@170 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@180 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@190 ns [ROUTER] Pkt in port EST: [ACK   Src:200 -> Dst:20 Addr:10 Data:0] -> Fwd to Port VEST
+@190 ns [CPU 20] DONE WRITE (ACK Received)
+@240 ns [CPU 20] INIT READ  -> MEM 200 | Adr:10
+@250 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@260 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@270 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@280 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@290 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@300 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@310 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@320 ns [ROUTER] Pkt in port VEST: [READ  Src:20 -> Dst:200 Addr:10 Data:0] -> Fwd to Port EST
+@320 ns [MEM 200] RECV: [READ  Src:20 -> Dst:200 Addr:10 Data:0]
+      ---> [READ OP] Read value 83 from address 10
+      ---> [REPLY] Sending response to CPU 20
+@340 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@350 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@360 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@370 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@380 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@390 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@400 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@410 ns [ROUTER] Pkt in port EST: [DATA  Src:200 -> Dst:20 Addr:10 Data:83] -> Fwd to Port VEST
+@410 ns [CPU 20] DONE READ (Data Received): 83
+      ---> SUCCESS: Read value matches written value!
+--- END L1 SIMULATION ---
+```
 
 ### Level 2: Dynamic System (Planned)
 - **Configuration:** Introduction of a **System Configurator** module.
