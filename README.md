@@ -34,7 +34,7 @@ The simulation models the entire lifecycle of a transaction:
 
 ## Core Components
 
-### 1. Shared Data Structures (utils.h)
+### 1. Shared Data Structures (```utils.h```)
 
 #### Overview
 
@@ -81,14 +81,14 @@ Command Types:
 
 <img width="782" height="421" alt="image" src="https://github.com/user-attachments/assets/56c5c1d0-4a9c-4295-aa63-8fb654ce53a2" />
 
-### 2. Router (router.h)
+### 2. Router (```router.h```)
 
 The Router is a cycle-accurate SystemC module responsible for packet switching, flow control, and network management. It operates on a hop-by-hop basis, using internal routing tables and arbitration logic to forward traffic from source to destination.
 
 #### Internal Mechanisms
 - **Arbitration Engine**: Implements two policies:
 
-   - ```PRIORITY``: Strict port ordering (N > S > E > W).
+   - ```PRIORITY```: Strict port ordering (N > S > E > W).
 
    - ```ROUND_ROBIN```: Dynamic priority rotation to prevent port starvation.
 
@@ -112,6 +112,24 @@ The router processes cfg_trans objects to update its behavior at runtime:
 #### Router WorkFlow Process
 
 ![Example_page-0001](https://github.com/user-attachments/assets/bc7a39b3-73c4-4a2d-b817-f8bdf8bca8cc)
+
+### 4. Memory Module (```mem.h```)
+
+#### Overview
+The ```MEM``` module is a functional SystemC model of a target memory slave within the NoC. It processes incoming transactions (Read/Write) and issues appropriate responses, simulating local storage using an associative array.
+
+#### Key Functional Behaviors
+- **Blocking Execution**: The module utilizes an ```SC_THREAD``` that suspends on ```in_port.read()```, ensuring it only consumes simulation cycles when data is present.
+
+- **Memory Modeling**: Internal storage is implemented via ```std::map<int, int>```, allowing for a flexible, sparse memory map where addresses are allocated dynamically upon the first write.
+
+- **Transaction Handling**:
+
+   - **Write**: Updates the internal map and issues an ```RSP_ACK``` to provide flow control confirmation to the initiator.
+
+   - **Read**: Performs a lookup in the map and returns an ```RSP_DATA``` packet containing the stored value or a default zero.
+
+- **Timing Simulation**: A fixed delay of 10ns is introduced before writing the response to the output port, modeling the physical access time of the memory hardware.
 
 ---
 
