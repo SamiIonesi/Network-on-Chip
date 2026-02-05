@@ -163,6 +163,24 @@ The ```MEM``` module is a functional SystemC model of a target memory slave with
 
 <img width="600" height="550" alt="image" src="https://github.com/user-attachments/assets/b0040342-fa85-4aee-bfe6-40f8ccddd7d9" />
 
+## 5. System Configurator (`Configurator.h`)
+
+### Overview
+The `Configurator` class serves as the initialization engine for the NoC Simulator. It parses the system architecture defined in a JSON file and populates internal data structures used by the main simulation loop to instantiate and connect modules.
+
+### Key Functionalities
+* **JSON Parsing:** Utilizes the `nlohmann::json` library to deserialize complex topology definitions.
+* **Topology Abstraction:** Converts high-level JSON descriptions (e.g., "North", "CPU") into low-level SystemC parameters (Port ID `0`, Module Pointers).
+* **L3 Multipath Support:**
+    * Detects whether a routing entry specifies a single path or multiple paths.
+    * Populates the `RouteDef` structure with a vector of viable output ports, enabling **Adaptive Routing** in the routers.
+* **Error Handling:** Wraps parsing logic in `try-catch` blocks to gracefully report malformed JSON files without crashing the simulation.
+
+### Data Structures
+* **`LinkDef`**: Defines physical connections between routers (`src_r` ↔ `dst_r`).
+* **`DeviceDef`**: Specifies peripheral attachment points and CPU instruction sets.
+* **`RouteDef`**: Maps destination IDs to one or more output ports for a specific router.
+
 ---
 
 ## Development Levels
