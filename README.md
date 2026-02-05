@@ -79,6 +79,8 @@ Command Types:
 
 - **Stream Operators**: Overloaded ```operator<<``` for both structures enables human-readable logging to ```std::cout``` for debugging and trace generation.
 
+<img width="782" height="421" alt="image" src="https://github.com/user-attachments/assets/56c5c1d0-4a9c-4295-aa63-8fb654ce53a2" />
+
 ---
 
 ## Development Levels
