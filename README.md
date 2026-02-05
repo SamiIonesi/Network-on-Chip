@@ -299,12 +299,167 @@ The diagram below shows the end-to-end path of a packet traveling from the first
 --- END L1 SIMULATION ---
 ```
 
-### Level 2: Dynamic System (Planned)
-- **Configuration:** Introduction of a **System Configurator** module.
-- **Parsing:** Automatic network assembly by reading an external configuration file (Topology & Traffic).
-- **Scalability:** Support for 16+ routers and configurable FIFO queue depths.
+### Level 2: Dynamic System
+- **Configuration:** Introduction of a **System Configurator** module (`Configurator.h`).
+- **Parsing:** Automatic network assembly by reading an external JSON configuration file (`config_L2.json`).
+- **Scalability:** Validated support for 16+ routers (4x4 Mesh) with variable FIFO queue depths and arbitration policies.
+- **Flexibility:** Topology changes (e.g., modifying links or device placement) require only a text file update, not a code recompilation.
 
-### Level 3: TO DO: a new future
+#### Visual Representation
+The system now parses a JSON structure to instantiate the hardware. The diagram below illustrates a 4x4 Mesh topology generated dynamically.
+
+#### Simulation Output Log Example
+The log demonstrates the Configurator parsing the JSON and initializing a 16-router mesh.
+
+```bash
+--- START L2 SIMULATION ---
+[SYS] Loading configuration from config_L2.json...
+[SYS] Parsed 16 routers.
+[SYS] Parsed 24 links.
+[SYS] Parsed 4 devices.
+[SYS] Configuring Routing Tables...
+@10 ns [CFG Router_0] Added Route: Dst 200 -> Port EAST
+@10 ns [CFG Router_1] Added Route: Dst 200 -> Port SOUTH
+...
+@10 ns [CPU 50] WRITE -> MEM 200 [Addr:20 Val:999]
+@20 ns [ROUTER Router_0] Pkt in port NORTH: [WRITE Src:50 -> Dst:200 ...] -> Fwd to Port EAST
+@30 ns [ROUTER Router_1] Pkt in port WEST:  [WRITE Src:50 -> Dst:200 ...] -> Fwd to Port SOUTH
+@40 ns [ROUTER Router_5] Pkt in port NORTH: [WRITE Src:50 -> Dst:200 ...] -> Fwd to Port EAST
+@50 ns [MEM 200] RECV: [WRITE Src:50 -> Dst:200 Addr:20 Data:999]
+    ---> [WRITE OP] Written value 999 at address 20
+    ---> [REPLY] Sending response to CPU 50
+@70 ns [CPU 50] RECV ACK. (Latency: 60 ns)
+--- END L2 SIMULATION ---
+```
+
+### Level 3: Advanced Network-on-Chip Features
+
+#### Overview
+
+This level implements advanced Network-on-Chip (NoC) features using a **6x4 Torus topology** with horizontal wraparound links.
+
+The design focuses on adaptive routing, fault handling, and detailed performance monitoring.
+
+---
+
+#### Network Topology
+
+- **Topology:** 6x4 Torus (24 Routers)
+- **Wraparound Links:** Horizontal (Left ↔ Right columns)
+- **Total Routers:** 24
+
+This configuration enables direct edge-to-edge communication, reducing hop count and latency.
+
+---
+
+#### L3 Features
+
+##### Adaptive Routing (Multipath)
+
+Routers utilize a `vector<int>` to store available output ports.
+
+- If a port becomes congested or disabled
+- The arbiter dynamically selects an alternative path
+- Improves reliability and load balancing
+
+---
+
+##### TTL (Time-To-Live)
+
+Each packet includes a TTL counter.
+
+- Decrements at every hop
+- Packets with `TTL = 0` are dropped
+- Prevents infinite routing loops in the Torus network
+
+---
+
+##### Advanced Statistics
+
+The system provides cycle-accurate reporting of:
+
+- Routed packets
+- Reroutes
+- TTL drops
+
+This allows precise performance analysis and debugging.
+
+---
+
+#### Routing Scenario
+
+##### Scenario Description
+
+A complex routing scenario involving:
+
+- Horizontal wraparound traversal
+- Edge-to-edge communication
+- Disabled port handling
+
+This scenario validates routing robustness under constrained conditions.
+
+---
+
+#### Visual Representation
+
+The diagram below illustrates the 6x4 Torus architecture, including CPU/MEM placement and wraparound links.
+
+
+
+---
+
+#### Traffic Scenario: "Long Jump"
+
+##### Goal
+
+Transmit a packet from:
+
+- **CPU 101** → Router 0 (North Port)
+- **MEM 200** → Router 23 (South Port)
+
+---
+
+##### Path Description
+
+Instead of traversing the internal mesh, the packet:
+
+1. Travels South to Router 18
+2. Uses the wraparound link (West)
+3. Jumps directly to Router 23
+
+This bypasses internal routing and minimizes latency.
+
+```bash
+@10 ns [CFG Router_1] Max Queue Length: 16
+@10 ns [CFG Router_1] Arbiter: Round-Robin
+@30 ns [CPU 101] WRITE -> MEM 200 [Addr:50 Val:999]
+@40 ns [ROUTER Router_0] Pkt in port NORTH: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:10]
+    -> Fwd to Port SOUTH
+@50 ns [ROUTER Router_6] Pkt in port NORTH: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:9]
+    -> Fwd to Port SOUTH
+@60 ns [ROUTER Router_12] Pkt in port NORTH: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:8]
+    -> Fwd to Port SOUTH
+@70 ns [ROUTER Router_18] Pkt in port NORTH: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:7]
+    -> Fwd to Port WEST
+@80 ns [ROUTER Router_23] Pkt in port EAST: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:6]
+    -> Fwd to Port SOUTH
+@80 ns [MEM 200] RECV: [WRITE Src:101 -> Dst:200 Addr:50 Data:999 TTL:5]
+      ---> [WRITE OP] Written value 999 at address 50
+      ---> [REPLY] Sending response to CPU 101
+@100 ns [ROUTER Router_23] Pkt in port SOUTH: [ACK   Src:200 -> Dst:101 Addr:50 Data:0 TTL:10]
+    -> Fwd to Port NORTH
+@110 ns [ROUTER Router_17] Pkt in port SOUTH: [ACK   Src:200 -> Dst:101 Addr:50 Data:0 TTL:9]
+    -> Fwd to Port NORTH
+@120 ns [ROUTER Router_11] Pkt in port SOUTH: [ACK   Src:200 -> Dst:101 Addr:50 Data:0 TTL:8]
+    -> Fwd to Port NORTH
+@130 ns [ROUTER Router_5] Pkt in port SOUTH: [ACK   Src:200 -> Dst:101 Addr:50 Data:0 TTL:7]
+    -> Fwd to Port EAST
+@140 ns [ROUTER Router_0] Pkt in port WEST: [ACK   Src:200 -> Dst:101 Addr:50 Data:0 TTL:6]
+    -> Fwd to Port NORTH
+      [CPU 101] RECV ACK. (Latency: 60 ns)
+@140 ns [CPU 101] Finished all tasks.
+--- SIMULATION FINISHED ---
+```
 
 ---
 

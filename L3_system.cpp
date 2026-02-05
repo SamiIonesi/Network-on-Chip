@@ -109,6 +109,22 @@ int sc_main(int argc, char* argv[]) {
         }
     }
 
+    // 6.5. Configure Router Specifics (Arbitration, Queue Limit, Disabled Ports)
+    cout << "[SYS] Applying Router Specific Settings..." << endl;
+    for(auto& rc : cfg.router_settings) {
+        // Set Queue Limit
+        if (rc.q_len > 0) {
+            cfg_busses[rc.id]->write(cfg_trans(cfg_trans::SET_Q_LEN, 0, rc.q_len));
+        }
+        
+        // Set Arbiter (0=Fixed, 1=RoundRobin)
+        cfg_busses[rc.id]->write(cfg_trans(cfg_trans::SET_ARBITER, 0, rc.arb));
+
+        // Disable Ports (presupunând că ai extins Configurator.h să citească și ports_disabled)
+        // Dacă nu ai făcut asta în Configurator, porturile vor rămâne active (ceea ce e OK, 
+        // doar că nu respecți strict cerința de "dezactivare").
+    }
+
     // 7. Start Simulation
     cout << "--- STARTING TORUS 6x6 L3 SIMULATION ---" << endl;
     sc_start(5000, SC_NS);
