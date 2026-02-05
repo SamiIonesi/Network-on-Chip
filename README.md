@@ -111,8 +111,6 @@ The router processes cfg_trans objects to update its behavior at runtime:
 
 #### Router WorkFlow Process
 
-<img width="687" height="617" alt="image" src="https://github.com/user-attachments/assets/bc7a39b3-73c4-4a2d-b817-f8bdf8bca8cc" />
-
 ![Example_page-0001](https://github.com/user-attachments/assets/bc7a39b3-73c4-4a2d-b817-f8bdf8bca8cc)
 
 ### 4. Memory Module (```mem.h```)
