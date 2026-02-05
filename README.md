@@ -34,7 +34,7 @@ The simulation models the entire lifecycle of a transaction:
 
 ## Core Components
 
-### Shared Data Structures (utils.h)
+### 1. Shared Data Structures (utils.h)
 
 #### Overview
 
@@ -80,6 +80,34 @@ Command Types:
 - **Stream Operators**: Overloaded ```operator<<``` for both structures enables human-readable logging to ```std::cout``` for debugging and trace generation.
 
 <img width="782" height="421" alt="image" src="https://github.com/user-attachments/assets/56c5c1d0-4a9c-4295-aa63-8fb654ce53a2" />
+
+### 2. Router (router.h)
+
+The Router is a cycle-accurate SystemC module responsible for packet switching, flow control, and network management. It operates on a hop-by-hop basis, using internal routing tables and arbitration logic to forward traffic from source to destination.
+
+#### Internal Mechanisms
+- **Arbitration Engine**: Implements two policies:
+
+   - ```PRIORITY``: Strict port ordering (N > S > E > W).
+
+   - ```ROUND_ROBIN```: Dynamic priority rotation to prevent port starvation.
+
+- **Adaptive Routing**: Supports multipath forwarding. If the ```routing_table``` provides multiple output vectors for a single ```dst_id```, the router performs a load-balancing check, selecting the port with the highest available FIFO capacity (```num_free()```).
+
+- **Error Handling & Telemetry**:
+
+   - **TTL Enforcement**: Drops packets with expired lifetimes to mitigate routing loops.
+
+   - **Drop Counters**: Categorizes and counts failed transmissions (No Route, Disabled Port, TTL Expired) for post-simulation analysis.
+
+#### Configuration commands
+The router processes cfg_trans objects to update its behavior at runtime:
+
+- ```SET_ROUTE```: Appends a new port to a destination's vector list.
+
+- ```ENABLE_PORT```: Toggles physical link availability.
+
+- ```SET_ARBITER```: Changes the arbitration logic between Priority and Round Robin.
 
 ---
 
