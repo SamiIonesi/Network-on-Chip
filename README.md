@@ -109,6 +109,10 @@ The router processes cfg_trans objects to update its behavior at runtime:
 
 - ```SET_ARBITER```: Changes the arbitration logic between Priority and Round Robin.
 
+#### Router WorkFlow Process
+
+![Example_page-0001](https://github.com/user-attachments/assets/bc7a39b3-73c4-4a2d-b817-f8bdf8bca8cc)
+
 ---
 
 ## Development Levels
