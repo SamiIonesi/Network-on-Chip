@@ -113,6 +113,34 @@ The router processes cfg_trans objects to update its behavior at runtime:
 
 ![Example_page-0001](https://github.com/user-attachments/assets/bc7a39b3-73c4-4a2d-b817-f8bdf8bca8cc)
 
+### 3. CPU Master Module (```cpu_v2.h```)
+
+#### Overview
+The ```CPU_L2``` module simulates a processing unit that acts as a traffic generator for the Network-on-Chip. It operates in a blocking, synchronous mode, meaning it issues a memory request and halts execution until the corresponding response is received from the target memory.
+
+#### Internal Architecture
+1. **Task Queue** (```tasks```): A FIFO buffer storing ```CpuTask``` objects. This allows the simulation to run deterministic traffic patterns defined in the JSON configuration.
+
+2. **Performance Counters**:
+
+   - ```total_latency```: Accumulates the round-trip time of all completed transactions.
+
+   - ```received_packets```: Counts successful operations to calculate the average latency at the end of the simulation.
+
+#### Logic Flow: ```process()```
+
+The module runs a dedicated ```SC_THREAD``` with the following cycle:
+
+- **Fetch**: Retrieves the next instruction from the queue.
+
+- **Delay**: Executes a ```wait()``` to model internal processing time or bus idle time.
+
+- **Issue**: Constructs a packet (Header + Payload) and pushes it to the ```out_port```.
+
+- **Wait** (Blocking): Calls ```in_port.read()```, suspending the thread until the NoC delivers the response.
+
+- **Telemetry**: Upon wake-up, calculates latency (```Current Time - Packet Birth Time```) and logs the result.
+
 ### 4. Memory Module (```mem.h```)
 
 #### Overview
