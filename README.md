@@ -181,7 +181,7 @@ The `Configurator` class serves as the initialization engine for the NoC Simulat
 * **`DeviceDef`**: Specifies peripheral attachment points and CPU instruction sets.
 * **`RouteDef`**: Maps destination IDs to one or more output ports for a specific router.
 
-<img width="666" height="370" alt="image" src="https://github.com/user-attachments/assets/67b7bdfd-62a3-4be5-b10c-bec873c557fe" />
+<img width="666" height="370" alt="image" src="https://github.com/user-attachments/assets/e2a1fda7-cc17-4492-b0f2-879a0f25acb8" />
 
 ---
 
