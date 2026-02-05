@@ -406,7 +406,7 @@ This scenario validates routing robustness under constrained conditions.
 
 The diagram below illustrates the 6x4 Torus architecture, including CPU/MEM placement and wraparound links.
 
-
+<img width="1141" height="692" alt="image" src="https://github.com/user-attachments/assets/655b1804-3b7b-4f4a-ba03-bb6f39be00fd" />
 
 ---
 
