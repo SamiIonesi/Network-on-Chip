@@ -1,28 +1,45 @@
-A high-level cycle-accurate simulation of a Network-on-Chip (NoC) architecture implemented in **SystemC**. This project models a packet-switched communication network between processing units (CPUs) and memory controllers.
+# Network-on-Chip
 
-## 🏗️ System Architecture
+## Introduction
 
-The environment follows a modular hardware-centric design, utilizing SystemC's `SC_MODULE` for hardware components and `sc_fifo` for communication channels.
+NoC-SystemC is a modular, cycle-accurate simulator for a Network-on-Chip (NoC) architecture, implemented using C++ and the SystemC library.
 
-### 1. Core Components
-* **CPU (Traffic Generator):** Acts as a Bus Master. It initiates memory transactions (Read/Write) and implements a blocking handshake mechanism. It performs self-checking by verifying if data read matches the data previously written.
-* **Router (Switch):** The heart of the NoC. It features a 4-port (North, South, East, West) architecture with an internal arbiter. It uses a look-up table (LUT) to decide the output port based on the `dst_id` of the incoming packet.
-* **MEM (Memory Slave):** Simulates a memory controller using a `std::map<int, int>`. This allows for sparse memory allocation (modeling a large address space without high RAM usage on the host machine).
-* **Packet (Transaction Layer):** A custom data structure containing:
-    * `type`: REQ_READ, REQ_WRITE, RSP_DATA, RSP_ACK.
-    * `src_id` / `dst_id`: Routing metadata.
-    * `address` / `data`: Payload information.
+This project simulates a packet-switched network designed to interconnect various IP blocks (CPUs and Memories) on a chip. It provides a highly configurable environment to test routing algorithms, arbitration policies, and network topologies (Mesh/Torus). The system is capable of generating detailed performance metrics, including end-to-end latency, throughput analysis, and congestion monitoring.
 
-### 2. Communication Protocol
-The system implements a **Request-Response Handshake**:
-1.  **Request Phase:** CPU sends a `REQ` packet through its `out_port`.
-2.  **Routing Phase:** Routers forward the packet hop-by-hop based on static routing tables.
-3.  **Processing Phase:** MEM receives the request, performs the operation, and generates a `RSP` packet.
-4.  **Response Phase:** The response packet travels back to the specific CPU that initiated the request.
+## Project Description
+
+The core of the simulation is a generic, configurable Router module connected via bidirectional channels. The system scales dynamically based on a JSON configuration file, allowing the instantiation of complex topologies ranging from simple 2x2 meshes to large 6x6 Torus grids (36+ routers).
+
+The simulation models the entire lifecycle of a transaction:
+
+1. **Configuration**: A Configurator module parses a JSON file to set up routing tables, buffer sizes, and arbitration policies.
+
+2. **Traffic Generation**: CPU modules generate read/write requests.
+
+3. **Routing**: Packets traverse the network using adaptive routing logic.
+
+4. **Execution**: Memory modules process requests and send acknowledgments back to the source.
+
+5. **Analysis**: The system tracks Time-To-Live (TTL), latency, and packet drops for performance visualization.
+
+
+## System Architecture
+
+- Scalability: Supports a minimum of 8 routers, scalable to 36+ (Torus 6x6).
+
+- Connectivity: defined via configuration files (JSON).
+
+- Flexible Topology: Routers, CPUs, and Memories can be connected in arbitrary layouts defined by the user.
+
+
+## Core Components
+
 
 ---
 
-## 📈 Development Levels
+## Development Levels
+
+This project was designed and implemented to meet specific academic requirements, progressing through four levels of complexity (L0 - L3).
 
 ### Level 0: Unit Testing
 - Validation of a single Router instance.
@@ -145,15 +162,31 @@ The diagram below shows the end-to-end path of a packet traveling from the first
 
 ---
 
-## 🛠️ Technical Details
+## Key Features
+
+- **Adaptive Routing**: The router intelligently selects output ports based on buffer occupancy (congestion awareness).
+
+- **Traffic & Congestion Analysis**: Generates CSV reports and Python-based visualizations (Heatmaps, Bar Charts) to analyze network hotspots.
+
+- **Robustness**: Handles routing loops via TTL and disabled ports gracefully.
+
+- **JSON Configuration**: Uses nlohmann/json for modern, human-readable configuration of the entire topology.
+
+## Visual Reports
+
+The simulation outputs a performance_report.csv which is processed to generate visual analytics:
+
+- **Traffic Heatmap**: Visualizes load distribution across the Torus grid.
+
+- **Latency Charts**: Shows average transaction time per CPU.
+
+- **Drop Analysis**: Highlights packets dropped due to TTL expiration or disabled routes.
+
+
+## Technical Details
 
 ### Prerequisites
-* C++ Compiler (GCC 7+ or Clang)
-* SystemC 2.3.x library installed on your system.
+* **C++ Compiler** (GCC 7+ or Clang)
+* **SystemC** 2.3.x library installed on your system.
+* **Python 3** (for visualization scripts) with pandas, matplotlib, and seaborn.
 
-### Build and Run
-Set your `SYSTEMC_HOME` environment variable, then compile:
-
-```bash
-g++ -I$SYSTEMC_HOME/include -L$SYSTEMC_HOME/lib-linux64 \
-    -o noc_sim L1_network.cpp -lsystemc -lm

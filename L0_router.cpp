@@ -82,6 +82,9 @@ int sc_main(int argc, char* argv[]) {
     } else {
         cout << "WEST (Port 3) is empty." << endl;
     }
+
+    r1.print_stats();
+    
     cout << "--- END ---" << endl;
     return 0;
 }

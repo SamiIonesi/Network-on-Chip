@@ -1,0 +1,46 @@
+{
+  "system": {
+    "num_routers": 36,
+    "fifo_size": 16
+  },
+  "links": [
+    { "src_r": 0, "src_p": "E", "dst_r": 1, "dst_p": "V" }, { "src_r": 1, "src_p": "E", "dst_r": 2, "dst_p": "V" }, { "src_r": 2, "src_p": "E", "dst_r": 3, "dst_p": "V" }, { "src_r": 3, "src_p": "E", "dst_r": 4, "dst_p": "V" }, { "src_r": 4, "src_p": "E", "dst_r": 5, "dst_p": "V" }, { "src_r": 5, "src_p": "E", "dst_r": 0, "dst_p": "V" },
+    { "src_r": 6, "src_p": "E", "dst_r": 7, "dst_p": "V" }, { "src_r": 7, "src_p": "E", "dst_r": 8, "dst_p": "V" }, { "src_r": 8, "src_p": "E", "dst_r": 9, "dst_p": "V" }, { "src_r": 9, "src_p": "E", "dst_r": 10, "dst_p": "V" }, { "src_r": 10, "src_p": "E", "dst_r": 11, "dst_p": "V" }, { "src_r": 11, "src_p": "E", "dst_r": 6, "dst_p": "V" },
+    { "src_r": 12, "src_p": "E", "dst_r": 13, "dst_p": "V" }, { "src_r": 13, "src_p": "E", "dst_r": 14, "dst_p": "V" }, { "src_r": 14, "src_p": "E", "dst_r": 15, "dst_p": "V" }, { "src_r": 15, "src_p": "E", "dst_r": 16, "dst_p": "V" }, { "src_r": 16, "src_p": "E", "dst_r": 17, "dst_p": "V" }, { "src_r": 17, "src_p": "E", "dst_r": 12, "dst_p": "V" },
+    { "src_r": 18, "src_p": "E", "dst_r": 19, "dst_p": "V" }, { "src_r": 19, "src_p": "E", "dst_r": 20, "dst_p": "V" }, { "src_r": 20, "src_p": "E", "dst_r": 21, "dst_p": "V" }, { "src_r": 21, "src_p": "E", "dst_r": 22, "dst_p": "V" }, { "src_r": 22, "src_p": "E", "dst_r": 23, "dst_p": "V" }, { "src_r": 23, "src_p": "E", "dst_r": 18, "dst_p": "V" },
+    { "src_r": 24, "src_p": "E", "dst_r": 25, "dst_p": "V" }, { "src_r": 25, "src_p": "E", "dst_r": 26, "dst_p": "V" }, { "src_r": 26, "src_p": "E", "dst_r": 27, "dst_p": "V" }, { "src_r": 27, "src_p": "E", "dst_r": 28, "dst_p": "V" }, { "src_r": 28, "src_p": "E", "dst_r": 29, "dst_p": "V" }, { "src_r": 29, "src_p": "E", "dst_r": 24, "dst_p": "V" },
+    { "src_r": 30, "src_p": "E", "dst_r": 31, "dst_p": "V" }, { "src_r": 31, "src_p": "E", "dst_r": 32, "dst_p": "V" }, { "src_r": 32, "src_p": "E", "dst_r": 33, "dst_p": "V" }, { "src_r": 33, "src_p": "E", "dst_r": 34, "dst_p": "V" }, { "src_r": 34, "src_p": "E", "dst_r": 35, "dst_p": "V" }, { "src_r": 35, "src_p": "E", "dst_r": 30, "dst_p": "V" },
+    
+    { "src_r": 0, "src_p": "S", "dst_r": 6, "dst_p": "N" }, { "src_r": 6, "src_p": "S", "dst_r": 12, "dst_p": "N" }, { "src_r": 12, "src_p": "S", "dst_r": 18, "dst_p": "N" }, { "src_r": 18, "src_p": "S", "dst_r": 24, "dst_p": "N" }, { "src_r": 24, "src_p": "S", "dst_r": 30, "dst_p": "N" }, { "src_r": 30, "src_p": "S", "dst_r": 0, "dst_p": "N" },
+    { "src_r": 1, "src_p": "S", "dst_r": 7, "dst_p": "N" }, { "src_r": 7, "src_p": "S", "dst_r": 13, "dst_p": "N" }, { "src_r": 13, "src_p": "S", "dst_r": 19, "dst_p": "N" }, { "src_r": 19, "src_p": "S", "dst_r": 25, "dst_p": "N" }, { "src_r": 25, "src_p": "S", "dst_r": 31, "dst_p": "N" }, { "src_r": 31, "src_p": "S", "dst_r": 1, "dst_p": "N" },
+    { "src_r": 2, "src_p": "S", "dst_r": 8, "dst_p": "N" }, { "src_r": 8, "src_p": "S", "dst_r": 14, "dst_p": "N" }, { "src_r": 14, "src_p": "S", "dst_r": 20, "dst_p": "N" }, { "src_r": 20, "src_p": "S", "dst_r": 26, "dst_p": "N" }, { "src_r": 26, "src_p": "S", "dst_r": 32, "dst_p": "N" }, { "src_r": 32, "src_p": "S", "dst_r": 2, "dst_p": "N" },
+    { "src_r": 3, "src_p": "S", "dst_r": 9, "dst_p": "N" }, { "src_r": 9, "src_p": "S", "dst_r": 15, "dst_p": "N" }, { "src_r": 15, "src_p": "S", "dst_r": 21, "dst_p": "N" }, { "src_r": 21, "src_p": "S", "dst_r": 27, "dst_p": "N" }, { "src_r": 27, "src_p": "S", "dst_r": 33, "dst_p": "N" }, { "src_r": 33, "src_p": "S", "dst_r": 3, "dst_p": "N" },
+    { "src_r": 4, "src_p": "S", "dst_r": 10, "dst_p": "N" }, { "src_r": 10, "src_p": "S", "dst_r": 16, "dst_p": "N" }, { "src_r": 16, "src_p": "S", "dst_r": 22, "dst_p": "N" }, { "src_r": 22, "src_p": "S", "dst_r": 28, "dst_p": "N" }, { "src_r": 28, "src_p": "S", "dst_r": 34, "dst_p": "N" }, { "src_r": 34, "src_p": "S", "dst_r": 4, "dst_p": "N" },
+    { "src_r": 5, "src_p": "S", "dst_r": 11, "dst_p": "N" }, { "src_r": 11, "src_p": "S", "dst_r": 17, "dst_p": "N" }, { "src_r": 17, "src_p": "S", "dst_r": 23, "dst_p": "N" }, { "src_r": 23, "src_p": "S", "dst_r": 29, "dst_p": "N" }, { "src_r": 29, "src_p": "S", "dst_r": 35, "dst_p": "N" }, { "src_r": 35, "src_p": "S", "dst_r": 5, "dst_p": "N" }
+  ],
+  "devices": [
+    { 
+      "type": "CPU", "id": 101, "router": 0, "port": "V",
+      "tasks": [
+        { "op": "WRITE", "target": 201, "addr": 10, "data": 555, "delay": 20 },
+        { "op": "READ",  "target": 201, "addr": 10, "delay": 50 }
+      ]
+    },
+    { 
+      "type": "CPU", "id": 102, "router": 35, "port": "V",
+      "tasks": [
+        { "op": "WRITE", "target": 201, "addr": 20, "data": 777, "delay": 30 }
+      ]
+    },
+    { "type": "MEM", "id": 201, "router": 15, "port": "E" }
+  ],
+  "routing_table": [
+    { "target": 201, "router": 0, "out": ["E", "S"] },
+    { "target": 201, "router": 1, "out": "E" },
+    { "target": 201, "router": 6, "out": "S" },
+    { "target": 999, "router": 10, "out": "E" },
+    { "target": 999, "router": 11, "out": "V" },
+    { "target": 101, "router": 15, "out": ["V", "N"] },
+    { "target": 102, "router": 15, "out": "S" }
+  ]
+}

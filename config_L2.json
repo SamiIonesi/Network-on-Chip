@@ -1,0 +1,50 @@
+{
+  "system": {
+    "num_routers": 16,
+    "fifo_size": 16
+  },
+  "routers_config": [
+      { "id": 0, "queue_limit": 16, "arbiter": 1 },
+      { "id": 15, "queue_limit": 16, "arbiter": 1 }
+  ],
+  "links": [
+    {"src_r": 0, "src_p": "E", "dst_r": 1, "dst_p": "V"}, {"src_r": 1, "src_p": "V", "dst_r": 0, "dst_p": "E"},
+    {"src_r": 1, "src_p": "E", "dst_r": 2, "dst_p": "V"}, {"src_r": 2, "src_p": "V", "dst_r": 1, "dst_p": "E"},
+    {"src_r": 2, "src_p": "E", "dst_r": 3, "dst_p": "V"}, {"src_r": 3, "src_p": "V", "dst_r": 2, "dst_p": "E"},
+
+    {"src_r": 0, "src_p": "S", "dst_r": 4, "dst_p": "N"}, {"src_r": 4, "src_p": "N", "dst_r": 0, "dst_p": "S"},
+    {"src_r": 4, "src_p": "S", "dst_r": 8, "dst_p": "N"}, {"src_r": 8, "src_p": "N", "dst_r": 4, "dst_p": "S"},
+    {"src_r": 8, "src_p": "S", "dst_r": 12, "dst_p": "N"}, {"src_r": 12, "src_p": "N", "dst_r": 8, "dst_p": "S"},
+
+    {"src_r": 12, "src_p": "E", "dst_r": 13, "dst_p": "V"}, {"src_r": 13, "src_p": "V", "dst_r": 12, "dst_p": "E"},
+    {"src_r": 13, "src_p": "E", "dst_r": 14, "dst_p": "V"}, {"src_r": 14, "src_p": "V", "dst_r": 13, "dst_p": "E"},
+    {"src_r": 14, "src_p": "E", "dst_r": 15, "dst_p": "V"}, {"src_r": 15, "src_p": "V", "dst_r": 14, "dst_p": "E"}
+  ],
+  "devices": [
+    { 
+      "type": "CPU", "id": 101, "router": 0, "port": "V",
+      "tasks": [
+        { "op": "WRITE", "target": 201, "addr": 10, "data": 500, "delay": 20 },
+        { "op": "READ",  "target": 201, "addr": 10, "delay": 100 }
+      ]
+    },
+    { "type": "MEM", "id": 201, "router": 15, "port": "E" }
+  ],
+  "routing_table": [
+    { "target": 201, "router": 0, "out": "S" },
+    { "target": 201, "router": 4, "out": "S" },
+    { "target": 201, "router": 8, "out": "S" },
+    { "target": 201, "router": 12, "out": "E" },
+    { "target": 201, "router": 13, "out": "E" },
+    { "target": 201, "router": 14, "out": "E" },
+    { "target": 201, "router": 15, "out": "E" },
+
+    { "target": 101, "router": 15, "out": "V" },
+    { "target": 101, "router": 14, "out": "V" },
+    { "target": 101, "router": 13, "out": "V" },
+    { "target": 101, "router": 12, "out": "N" },
+    { "target": 101, "router": 8, "out": "N" },
+    { "target": 101, "router": 4, "out": "N" },
+    { "target": 101, "router": 0, "out": "V" }
+  ]
+}

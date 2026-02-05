@@ -1,67 +1,53 @@
-// utils.h
 #ifndef UTILS_H
 #define UTILS_H
 
 #include <systemc.h>
 #include <iostream>
 
+// Port identifiers for the router
 enum PortID { N = 0, S = 1, E = 2, V = 3 }; 
+// Arbitration policies
 enum ArbMode { PRIORITY = 0, ROUND_ROBIN = 1 };
-const char* PortNames[] = { "NORD", "SUD", "EST", "VEST" };
-
-// Asta este practic "masina" care transporta datele -> L0
-// struct packet {
-//     int src_id; //Adresa expeditor (CPU)
-//     int dst_id; //Adresa destinatar (MEM)
-//     int data;   //Date utile (marfa transportata)
-    
-//     // Constructor default (necesar pentru sc_fifo pt a crea pachete goale)
-//     packet() : src_id(0), dst_id(0), data(0) {}
-
-//     // Constructor cu parametri (pt a crea pachete cu date)
-//     packet(int s, int d, int val) : src_id(s), dst_id(d), data(val) {}
-
-//     // Operator == (necesar pentru sc_signal)
-//     bool operator==(const packet& other) const {
-//         return (src_id == other.src_id && dst_id == other.dst_id && data == other.data);
-//     }
-    
-//     // Operator << (necesar pentru afisare si sc_fifo dump)
-//     friend ostream& operator<<(ostream& os, const packet& p) {
-//         os << "[Src:" << p.src_id << " -> Dst:" << p.dst_id << "   Data:" << p.data << "]";
-//         return os;
-//     }
-// };
-
+// String representation of ports for logging purposes
+const char* PortNames[] = { "NORTH", "SOUTH", "EAST", "WEST" };
 
 struct packet {
     enum Type { 
-        REQ_WRITE = 0, // CPU cere să scrie date în MEM
-        REQ_READ = 1,  // CPU cere să citească date din MEM
-        RSP_ACK = 2,   // MEM confirmă că a scris datele
-        RSP_DATA = 3   // MEM trimite datele cerute înapoi la CPU
+        REQ_WRITE = 0, // CPU requests to write data to MEM
+        REQ_READ = 1,  // CPU requests to read data from MEM
+        RSP_ACK = 2,   // MEM confirms data has been written
+        RSP_DATA = 3   // MEM sends requested data back to CPU
     };
 
-    Type type;     // Tipul mesajului curent
-    int src_id;    // Cine a inițiat (ex: CPU ID)
-    int dst_id;    // Destinația curentă (ex: MEM ID)
-    int address;   // Adresa din memorie unde scriem/citim
-    int data;      // Datele efective (pentru WRITE sau RSP_DATA)
+    Type type;           // Current message type
+    int src_id;          // Initiator ID (CPU ID)
+    int dst_id;          // Destination ID (MEM ID)
+    int address;         // Memory address for read/write
+    int data;            // Actual data (for WRITE or RSP_DATA)
+    int ttl;             // Time To Live: prevents infinite loops
+    sc_time birth_time;  // Timestamp used to calculate end-to-end latency
 
-    // Constructor Default
-    packet() : type(REQ_WRITE), src_id(0), dst_id(0), address(0), data(0) {}
+    // Default Constructor
+    packet() : type(REQ_WRITE), src_id(0), dst_id(0), address(0), data(0) {
+        ttl = 10;                     
+        birth_time = sc_time_stamp();
+    }
 
-    // Constructor Parametrizat
+    // Parameterized Constructor
     packet(Type t, int s, int d, int addr, int val) 
-        : type(t), src_id(s), dst_id(d), address(addr), data(val) {}
+        : type(t), src_id(s), dst_id(d), address(addr), data(val) {
+        ttl = 10;                      
+        birth_time = sc_time_stamp();
+    }
 
-    // Operator == (Necesar pentru systemc semnale/fifo)
+    // Equality operator
     bool operator==(const packet& other) const {
         return (type == other.type && src_id == other.src_id && 
                 dst_id == other.dst_id && address == other.address && 
-                data == other.data);
+                data == other.data && ttl == other.ttl);
     }
     
+    // Stream operator for easy logging
     friend std::ostream& operator<<(std::ostream& os, const packet& p) {
         os << "[";
         switch(p.type) {
@@ -72,23 +58,18 @@ struct packet {
             default:        os << "???? "; break;
         }
         os << " Src:" << p.src_id << " -> Dst:" << p.dst_id 
-           << " Addr:" << p.address << " Data:" << p.data << "]";
+           << " Addr:" << p.address << " Data:" << p.data 
+           << " TTL:" << p.ttl << "]";
         return os;
     }
 };
 
-// Structura pentru tranzactii de configurare (deci practic cu acesta ii spunem routerului ce sa faca)
 struct cfg_trans {
-    // AM ADAUGAT INAPOI SET_ARBITER
     enum Type { SET_ROUTE = 0, ENABLE_PORT = 1, SET_Q_LEN = 2, SET_ARBITER = 3 };
-    // SET_ROUTE: comanda de schimbare a tabelei de rutare
-    // ENABLE_PORT: comanda de activare/dezactivare port
-    // SET_Q_LEN: comanda de setare lungime coada
-    // SET_ARBITER: comanda de schimbare a regulii de prioritate
 
-    int type; //Tipul comenzii
-    int target; //Pt SET_ROUTE: adresa destinatar; Pt ENABLE_PORT: id port
-    int value;  //Pt SET_ROUTE: id port de iesire; Pt SET_ARBITER: 0=FixPriority, 1=RR
+    int type;   // Command type
+    int target; // For SET_ROUTE: destination ID; For ENABLE_PORT: port ID
+    int value;  // For SET_ROUTE: output port ID; For SET_ARBITER: 0=FixedPriority, 1=RR
 
     cfg_trans() : type(0), target(0), value(0) {}
 
@@ -103,6 +84,5 @@ struct cfg_trans {
         return os;
     }
 };
-
 
 #endif

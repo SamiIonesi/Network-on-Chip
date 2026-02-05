@@ -1,5 +1,5 @@
 # Ignoră executabilele
-l1_sim
+*_sim
 *.out
 *.exe
 
