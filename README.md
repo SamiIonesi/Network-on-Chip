@@ -141,6 +141,8 @@ The module runs a dedicated ```SC_THREAD``` with the following cycle:
 
 - **Telemetry**: Upon wake-up, calculates latency (```Current Time - Packet Birth Time```) and logs the result.
 
+<img width="594" height="679" alt="image" src="https://github.com/user-attachments/assets/04efc424-fca4-4896-8e5c-a987b953cb32" />
+
 ### 4. Memory Module (```mem.h```)
 
 #### Overview
