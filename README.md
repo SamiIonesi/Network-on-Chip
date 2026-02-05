@@ -131,7 +131,7 @@ The ```MEM``` module is a functional SystemC model of a target memory slave with
 
 - **Timing Simulation**: A fixed delay of 10ns is introduced before writing the response to the output port, modeling the physical access time of the memory hardware.
 
-<img width="756" height="685" alt="image" src="https://github.com/user-attachments/assets/b0040342-fa85-4aee-bfe6-40f8ccddd7d9" />
+<img width="400" height="350" alt="image" src="https://github.com/user-attachments/assets/b0040342-fa85-4aee-bfe6-40f8ccddd7d9" />
 
 ---
 
