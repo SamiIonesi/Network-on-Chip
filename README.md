@@ -25,15 +25,41 @@ The simulation models the entire lifecycle of a transaction:
 
 ## System Architecture
 
-- Scalability: Supports a minimum of 8 routers, scalable to 36+ (Torus 6x6).
+- **Scalability**: Supports a minimum of 8 routers, scalable to 36+ (Torus 6x6).
 
-- Connectivity: defined via configuration files (JSON).
+- **Connectivity**: defined via configuration files (JSON).
 
-- Flexible Topology: Routers, CPUs, and Memories can be connected in arbitrary layouts defined by the user.
+- **Flexible Topology**: Routers, CPUs, and Memories can be connected in arbitrary layouts defined by the user.
 
 
 ## Core Components
 
+### Shared Data Structures (utils.h)
+
+#### Overview
+
+The utils.h header serves as the protocol definition layer for the NoC simulator. It contains the data structures required for both the *Data Plane* (actual memory traffic) and the *Control Plane* (network configuration).
+
+#### Key Data Structure
+
+1. The ```packet``` Structure Encapsulates all information necessary for end-to-end communication between CPUs and Memories.
+
+- **Header**: Contains ```type```, ```src_id```, and ```dst_id```. There are four types of transactions:
+```C++
+enum Type { 
+        REQ_WRITE = 0, // CPU requests to write data to MEM
+        REQ_READ = 1,  // CPU requests to read data from MEM
+        RSP_ACK = 2,   // MEM confirms data has been written
+        RSP_DATA = 3   // MEM sends requested data back to CPU
+    };
+```
+- **Payload**: Carries the memory ```address``` and the actual ```data```.
+
+- **Telemetry**:
+
+      - **TTL (Time To Live)**: Integer decremented at each hop to prevent infinite loops.
+
+      - **Birth Time**: sc_time object used to measure precise end-to-end latency.
 
 ---
 

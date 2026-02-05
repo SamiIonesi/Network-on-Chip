@@ -88,7 +88,7 @@ int sc_main(int argc, char* argv[]) {
 
     // Setare Tabela de Rutare
     for(auto& r : cfg.routes) {
-        cfg_busses[r.router]->write(cfg_trans(cfg_trans::SET_ROUTE, r.target, r.out_port));
+        cfg_busses[r.router]->write(cfg_trans(cfg_trans::SET_ROUTE, r.target, r.out_ports));
     }
     
     // 5. Inchidere Porturi Neutilizate (Anti-Eroare Port Not Bound)
