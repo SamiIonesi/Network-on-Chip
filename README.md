@@ -57,9 +57,27 @@ enum Type {
 
 - **Telemetry**:
 
-      - **TTL (Time To Live)**: Integer decremented at each hop to prevent infinite loops.
+   - **TTL (Time To Live)**: Integer decremented at each hop to prevent infinite loops.
 
-      - **Birth Time**: sc_time object used to measure precise end-to-end latency.
+   - **Birth Time**: sc_time object used to measure precise end-to-end latency.
+
+2. Configuration Transaction (struct cfg_trans) Defines the structure for control signals sent via the configuration bus during the initialization phase.
+
+Command Types:
+
+- **SET_ROUTE**: Updates the routing table (maps Destination ID → Output Port).
+
+- **ENABLE_PORT**: Activates or deactivates a physical port (Fault injection simulation).
+
+- **SET_ARBITER**: Switches between Fixed Priority and Round-Robin arbitration.
+
+- **SET_Q_LEN**: Sets the maximum depth of input FIFOs.
+
+#### Helper Utilities
+
+- **Port Mapping**: ```PortID``` enum maps ```{N, S, E, V}``` to ```{0, 1, 2, 3}``` for array indexing.
+
+- **Stream Operators**: Overloaded ```operator<<``` for both structures enables human-readable logging to ```std::cout``` for debugging and trace generation.
 
 ---
 
