@@ -491,6 +491,8 @@ Torus topology.
 -   **Torus Validation:** Activity on the edge routers (Col 0 and Col 5)
     confirms that Wraparound Links are actively being used for routing.
 
+<img width="1036" height="607" alt="image" src="https://github.com/user-attachments/assets/accd1ef3-dab7-496d-a5d8-3c5e69f555b2" />
+
 ### B. End-to-End Latency (`report_latency.png`)
 
 Displays the average round-trip time (Request + Response) for each
@@ -507,6 +509,8 @@ active CPU.
     expected behavior in our stress test, as they were assigned invalid
     routes to test the network's error handling capabilities.
 
+<img width="1227" height="608" alt="image" src="https://github.com/user-attachments/assets/1bb0fe77-f5af-4674-acdb-a0fe4fb8d03f" />
+
 ### C. Drop Analysis & Fault Tolerance (`report_traffic_drops.png`)
 
 A stacked bar chart that visualizes the robustness of the Layer 3
@@ -517,6 +521,8 @@ protocol. It categorizes packets into:
     the ping-pong scenario between R0 and R1).
 -   **No Route:** Packets dropped because the destination address did
     not exist in the routing table (e.g., Target 999).
+
+<img width="1488" height="735" alt="image" src="https://github.com/user-attachments/assets/b4325754-8d94-426d-bbb4-1de51d84b2bd" />
 
 ### D. Console Summary Output
 
