@@ -82,8 +82,7 @@ int sc_main(int argc, char* argv[]) {
         fifos.push_back(q2);
     }
 
-    // 5. FIX E109: Bind ALL remaining unbound ports to dummy FIFOs
-    // In a 36-router Torus, many N/S/E/V ports might still be null if not linked
+    // 5. Ensure all Router Ports are connected
     for(auto r : routers) {
         for(int p=0; p<4; p++) {
             // Check Input Port
@@ -126,23 +125,24 @@ int sc_main(int argc, char* argv[]) {
     }
 
     // 7. Start Simulation
-    cout << "--- STARTING TORUS 6x6 L3 SIMULATION ---" << endl;
-    sc_start(5000, SC_NS);
+    cout << "--- STARTING TORUS 6x4 L3 SIMULATION ---" << endl;
+    sc_start(8000, SC_NS);
     cout << "--- SIMULATION FINISHED ---" << endl;
 
     // 8. Generate Performance Report CSV
     ofstream csv("performance_report.csv");
-    csv << "Entity,Routed,TTLDrops,Reroutes,AvgLatency_ns" << endl;
+    csv << "Entity,Routed,TTLDrops,Reroutes,AvgLatency_ns,NoRouteDrops,DisabledDrops" << endl;
 
     for(auto r : routers) {
         csv << r->name() << "," << r->routed_packets << "," 
-            << r->dropped_ttl << "," << r->rerouted_count << ",0" << endl;
+            << r->dropped_ttl << "," << r->rerouted_count << ",0," 
+            << r->dropped_no_route << "," << r->dropped_disabled << endl;
         r->print_stats();
     }
 
     for(auto c : cpus) {
         double lat = (c->received_packets > 0) ? (c->total_latency.to_double() / c->received_packets) : 0;
-        csv << "CPU_" << c->my_id << ",0,0,0," << lat << endl;
+        csv << "CPU_" << c->my_id << "," << c->received_packets << ",0,0," << lat << ",0,0" << endl;
         c->print_cpu_stats();
     }
     

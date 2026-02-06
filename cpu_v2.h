@@ -23,7 +23,12 @@ SC_MODULE(CPU_L2) {
 
     // L3 Performance Statistics
     sc_time total_latency = SC_ZERO_TIME; // Cumulative round-trip time
-    int received_packets = 0;              // Total responses received
+    int received_packets = 0;             // Total responses received
+    int timeouts = 0;                     // Total requests that timed out
+
+    // Timeout Configuration
+    const int TIMEOUT_LIMIT = 600; // Nanoseconds to wait before giving up
+    const int CHECK_INTERVAL = 10; // How often to check the port (ns)
 
     void process() {
         wait(10, SC_NS); // Startup delay
@@ -37,7 +42,6 @@ SC_MODULE(CPU_L2) {
             if (t.delay > 0) wait(t.delay, SC_NS);
 
             // 3. Execute WRITE or READ
-            // We use the specialized constructor that initializes birth_time
             packet req(static_cast<packet::Type>(t.type), my_id, t.target_id, t.addr, t.data);
 
             if (t.type == packet::REQ_WRITE) {
@@ -52,22 +56,43 @@ SC_MODULE(CPU_L2) {
             // Send the packet
             out_port.write(req);
 
-            // 4. Wait for Confirmation (Blocking)
-            packet rsp;
-            in_port.read(rsp);
+            // 4. Wait for Confirmation with TIMEOUT mechanism
+            bool success = false;
+            int time_waited = 0;
 
-            // L3 Latency Calculation
-            // Calculate time elapsed since the request was created
-            sc_time latency = sc_time_stamp() - rsp.birth_time;
-            total_latency += latency;
-            received_packets++;
+            while (time_waited < TIMEOUT_LIMIT) {
+                // Check if data is available in the FIFO
+                if (in_port.num_available() > 0) {
+                    packet rsp;
+                    in_port.read(rsp); // Non-blocking read (we know data is there)
 
-            if (rsp.type == packet::RSP_DATA) {
-                cout << "      [CPU " << my_id << "] RECV DATA: " << rsp.data 
-                     << " (Latency: " << latency << ")" << endl;
-            } else if (rsp.type == packet::RSP_ACK) {
-                cout << "      [CPU " << my_id << "] RECV ACK." 
-                     << " (Latency: " << latency << ")" << endl;
+                    // L3 Latency Calculation
+                    sc_time latency = sc_time_stamp() - rsp.birth_time;
+                    total_latency += latency;
+                    received_packets++;
+
+                    if (rsp.type == packet::RSP_DATA) {
+                        cout << "      [CPU " << my_id << "] RECV DATA: " << rsp.data 
+                             << " (Latency: " << latency << ")" << endl;
+                    } else if (rsp.type == packet::RSP_ACK) {
+                        cout << "      [CPU " << my_id << "] RECV ACK." 
+                             << " (Latency: " << latency << ")" << endl;
+                    }
+                    success = true;
+                    break; // Exit the wait loop
+                }
+
+                // Wait a bit before checking again
+                wait(CHECK_INTERVAL, SC_NS);
+                time_waited += CHECK_INTERVAL;
+            }
+
+            // 5. Handle Timeout
+            if (!success) {
+                cout << "@" << sc_time_stamp() << " [CPU " << my_id 
+                     << "] TIMEOUT! No response from MEM " << t.target_id 
+                     << " (Waited " << TIMEOUT_LIMIT << "ns)" << endl;
+                timeouts++;
             }
         }
         cout << "@" << sc_time_stamp() << " [CPU " << my_id << "] Finished all tasks." << endl;
@@ -82,6 +107,10 @@ SC_MODULE(CPU_L2) {
             cout << "  - Average Latency: " << total_latency / received_packets << endl;
         } else {
             cout << "  - No packets received." << endl;
+        }
+        // New Metric
+        if (timeouts > 0) {
+            cout << "  - TIMEOUTS (Lost Packets): " << timeouts << endl;
         }
         cout << "-------------------------------------------" << endl;
     }

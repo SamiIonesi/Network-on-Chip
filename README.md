@@ -364,8 +364,6 @@ Routers utilize a `vector<int>` to store available output ports.
 - The arbiter dynamically selects an alternative path
 - Improves reliability and load balancing
 
----
-
 ##### TTL (Time-To-Live)
 
 Each packet includes a TTL counter.
@@ -373,8 +371,6 @@ Each packet includes a TTL counter.
 - Decrements at every hop
 - Packets with `TTL = 0` are dropped
 - Prevents infinite routing loops in the Torus network
-
----
 
 ##### Advanced Statistics
 
@@ -385,8 +381,6 @@ The system provides cycle-accurate reporting of:
 - TTL drops
 
 This allows precise performance analysis and debugging.
-
----
 
 #### Routing Scenario
 
@@ -400,15 +394,12 @@ A complex routing scenario involving:
 
 This scenario validates routing robustness under constrained conditions.
 
----
-
 #### Visual Representation
 
 The diagram below illustrates the 6x4 Torus architecture, including CPU/MEM placement and wraparound links.
 
 <img width="1141" height="692" alt="image" src="https://github.com/user-attachments/assets/655b1804-3b7b-4f4a-ba03-bb6f39be00fd" />
 
----
 
 #### Traffic Scenario: "Long Jump"
 
@@ -418,8 +409,6 @@ Transmit a packet from:
 
 - **CPU 101** → Router 0 (North Port)
 - **MEM 200** → Router 23 (South Port)
-
----
 
 ##### Path Description
 
@@ -475,16 +464,88 @@ This bypasses internal routing and minimizes latency.
 
 - **JSON Configuration**: Uses nlohmann/json for modern, human-readable configuration of the entire topology.
 
-## Visual Reports
+## 6. Visual Analytics & Performance Reports
 
-The simulation outputs a performance_report.csv which is processed to generate visual analytics:
+The simulation generates a raw data file (`performance_report.csv`)
+containing cycle-accurate statistics for every Router and CPU. A
+dedicated Python script processes this data to generate
+professional-grade visualization and a textual summary.
 
-- **Traffic Heatmap**: Visualizes load distribution across the Torus grid.
+### How to Generate Reports
 
-- **Latency Charts**: Shows average transaction time per CPU.
+Ensure you have `pandas`, `matplotlib`, and `seaborn` installed, then
+run:
 
-- **Drop Analysis**: Highlights packets dropped due to TTL expiration or disabled routes.
+``` bash
+python3 analyze_noc.py
+```
 
+### A. Traffic Heatmap (`report_heatmap.png`)
+
+This 6x4 grid visualization maps the traffic intensity across the entire
+Torus topology.
+
+-   **Purpose:** Identifies network congestion and "hotspots."
+-   **Observation:** In our stress test, Router 0 appears as a hotspot
+    (Dark Red) due to heavy injection from CPU 101.
+-   **Torus Validation:** Activity on the edge routers (Col 0 and Col 5)
+    confirms that Wraparound Links are actively being used for routing.
+
+### B. End-to-End Latency (`report_latency.png`)
+
+Displays the average round-trip time (Request + Response) for each
+active CPU.
+
+-   **Metric:** Time elapsed from packet creation (`birth_time`) to ACK
+    receipt.
+
+**Interpretation:**
+
+-   **CPU 101 & 102:** Show valid latency (\~50ns), confirming
+    successful transactions.
+-   **CPU 10 & 63:** May show no data or high timeout rates. This is
+    expected behavior in our stress test, as they were assigned invalid
+    routes to test the network's error handling capabilities.
+
+### C. Drop Analysis & Fault Tolerance (`report_traffic_drops.png`)
+
+A stacked bar chart that visualizes the robustness of the Layer 3
+protocol. It categorizes packets into:
+
+-   **Routed (Success):** Packets successfully forwarded.
+-   **TTL Expired:** Packets dropped to prevent infinite loops (e.g.,
+    the ping-pong scenario between R0 and R1).
+-   **No Route:** Packets dropped because the destination address did
+    not exist in the routing table (e.g., Target 999).
+
+### D. Console Summary Output
+
+The script also provides a high-level summary of the system's health.
+
+```bash
+============================================================
+ 📊  FULL NoC PERFORMANCE REPORT (6x4 TORUS)
+============================================================
+
+[1] GLOBAL TRAFFIC SUMMARY
+  - 📦 Total Packets Sent (Est.): 58
+  - ✅ Successful Deliveries:     33
+  - ❌ LOST PACKETS (Total Drop): 25
+      ├─ ⏳ TTL Expired:           8
+      ├─ 🚫 No Destination (Route):17
+      └─ 🔒 Port Disabled:         0
+
+[2] NETWORK ACTIVITY (ROUTERS)
+  - Total Hops (Switching):        284
+  - Adaptive Reroutes:             24
+  - Hotspot Node:                  Router_0 (33 hops)
+
+[3] LATENCY PERFORMANCE (CPU)
+  - Average Global Latency:        53933.32 ns
+  - Slowest Path:                  CPU_102 (60000.00 ns)
+
+============================================================
+```
 
 ## Technical Details
 

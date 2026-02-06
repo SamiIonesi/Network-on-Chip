@@ -29,14 +29,14 @@ struct packet {
 
     // Default Constructor
     packet() : type(REQ_WRITE), src_id(0), dst_id(0), address(0), data(0) {
-        ttl = 10;                     
+        ttl = 5;                     
         birth_time = sc_time_stamp();
     }
 
     // Parameterized Constructor
     packet(Type t, int s, int d, int addr, int val) 
         : type(t), src_id(s), dst_id(d), address(addr), data(val) {
-        ttl = 10;                      
+        ttl = 5;                      
         birth_time = sc_time_stamp();
     }
 
